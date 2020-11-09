@@ -1,0 +1,275 @@
+print ('\t\t\tTic-Tac-Toe \nEl objetivo del juego es lograr hacer 3 figuras \nen una fila, ya sea recta o diagonal')
+print '*************************************************'
+print '\t\tA jugar! \nPrimer turno: Robot Amariollo\nSegundo turno: Robot Azul'
+print '*************************************************'
+a=10
+b=2
+n4=0
+n5=0
+n8=0
+horizontal=0
+vertical=0
+diagonalCreciente=0
+diagonalDecreciente=0
+ganador=[0, 0, 'orientacion', 'colorRobot']
+contadorMovimientos=0
+#   |[9][4]     [9][7]      [9][10]| #   |[0][0]      [0][1]      [0][2]|
+#   |[6][4]     [6][7]      [6][10]| #   |[1][0]      [1][1]      [1][2]|
+#   |[3][4]     [3][7]      [3][10]| #   |[2][0]      [2][1]      [2][2]|
+
+#coordenadas [9][4] [9][7] [9][10]   [6, 4] [6, 7] [6, 10]   [3, 4] [3, 7] [3, 10]
+matrizR1 = [[[0, 0],[0, 0],[0, 0]], [[0, 0],[0, 0],[0, 0]], [[0, 0],[0, 0],[0, 0]]]
+matrizBinariaR1 = [[0,0,0],[0,0,0],[0,0,0]]
+matrizR2 = [[[0, 0],[0, 0],[0, 0]], [[0, 0],[0, 0],[0, 0]], [[0, 0],[0, 0],[0, 0]]]
+matrizBinariaR2 = [[0,0,0],[0,0,0],[0,0,0]]
+
+def dibujarCuad():
+    global contadorMovimientos
+    contadorMovimientos=contadorMovimientos+1
+    for i in range(0,4):
+        R1.move()
+        R1.put_beeper()
+        R1.turn_left()
+        for i in range(0,1):
+            R1.move()
+            R1.put_beeper()
+def dibujarCruz():
+    global contadorMovimientos
+    contadorMovimientos=contadorMovimientos+1
+    for i in range(0,8):
+        global n8
+        n8=n8+1
+        if not n8%2==0:
+            for i in range(1):
+                R2.put_beeper()
+                R2.move()
+        elif n8%2==0:
+            for i in range(0,1):
+                R2.turn_left()
+                R2.move()
+def verificador(): #el policia solo revisara el juego si y solo si se han hecho cuatro movimientos 
+    global contadorMovimientos
+    global horizontal, vertical, diagonalCreciente, diagonalDecreciente, ganador
+    index=2
+    if contadorMovimientos<3:
+        return None
+    for i in range (0, 3):
+        horizontal=0
+        vertical=0
+        for j in range (0, 3):
+            horizontal=matrizBinariaR1[i][j]+horizontal
+            vertical =matrizBinariaR1[j][i]+vertical
+            if horizontal==3:
+                ganador =[i, j, 1, 1]
+                return 0
+            if vertical==3:
+                ganador =[i, j, 2, 1]
+                return 0                
+    for i in range (0, 3):
+        horizontal=0
+        vertical=0
+        for j in range (0, 3):            
+            horizontal=matrizBinariaR2[i][j]+horizontal
+            vertical =matrizBinariaR2[j][i]+vertical
+            if horizontal==3:
+                ganador =[i, j, 1, 2]
+                return 0
+            if vertical==3:
+                ganador =[i, j, 2, 2]
+                return 0
+    diagonalCreciente=0
+    diagonalDecreciente=0
+    for i in range (0, 3):
+        diagonalDecreciente=matrizBinariaR1[i][i]+diagonalDecreciente
+        diagonalCreciente=matrizBinariaR1[index][i]+diagonalCreciente
+        index-=1
+        if diagonalDecreciente==3:
+            ganador =[i, i, 3, 1]
+            return 0
+        if diagonalCreciente==3:
+            ganador =[i, i, 4, 1]
+            return 0
+    diagonalCreciente=0
+    diagonalDecreciente=0
+    for i in range (0, 3):
+        diagonalCreciente=0
+        diagonalDecreciente=0
+        diagonalDecreciente=matrizBinariaR2[i][i]+diagonalDecreciente
+        diagonalCreciente=matrizBinariaR2[index][i]+diagonalCreciente
+        index-=1
+        if diagonalDecreciente==3:
+            ganador =[i, i, 3, 2]
+            return 0
+        if diagonalCreciente==3:
+            ganador =[i, i, 4, 2]
+            return 0
+def policia():
+    global ganador
+    index=0
+    index2=0
+    if ganador[0]==0:
+        index=9
+        index2=4
+    if ganador[0]==1:
+        index=6
+        index2=7
+    if ganador[0]==2:
+        index=3
+        index2=10
+    if ganador[2]==1:
+        R5=UsedRobot(avenues=2,streets=index,name='michael',colour='green',beepers=28, orient_key='E')
+        repeat(R5.move, 9)  
+    if ganador[2]==2:
+        R5=UsedRobot(avenues=index2,streets=1,name='michael',colour='green',beepers=28, orient_key='E')
+        while not R5.facing_north():
+            R5.turn_left()
+        repeat(R5.move, 9)  
+    if ganador[2]==3:
+        if ganador[0]==2:
+            R5=UsedRobot(avenues=10,streets=3,name='michael',colour='green',beepers=28, orient_key='E')
+            while not R5.facing_north():
+                R5.turn_left()
+            for i in range(0, 2):
+                repeat(R5.move, 3)
+                R5.turn_left()
+                repeat(R5.move, 3)
+                repeat(R5.turn_left, 3)
+            
+    if ganador[2]==4:
+        if ganador[0]==2:
+            R5=UsedRobot(avenues=4,streets=3,name='michael',colour='green',beepers=28, orient_key='E')
+            while not R5.facing_north():
+                R5.turn_left()
+            for i in range(0, 2):
+                repeat(R5.move, 3)
+                repeat(R5.turn_left, 3)
+                repeat(R5.move, 3)
+                R5.turn_left()
+            
+    if ganador[3]==1:
+        print '\n*******  GANADOR AMARILLO ******\n'
+        impririMatrices()
+        turn_off()
+    elif ganador[3]==2:
+        print '\n*******  GANADOR AZUL  ******\n'
+        impririMatrices()
+        turn_off()
+def llenarMatrizR1(x, y):
+    global matrizR1
+    if x==9 and y==4:
+        matrizR1[0][0]=[x, y]
+        matrizBinariaR1[0][0]=1
+    if x==9 and y==7:
+        matrizR1[0][1]=[x, y]
+        matrizBinariaR1[0][1]=1
+    if x==9 and y==10:
+        matrizR1[0][2]=[x, y]
+        matrizBinariaR1[0][2]=1
+    if x==6 and y==4:
+        matrizR1[1][0]=[x, y]
+        matrizBinariaR1[1][0]=1
+    if x==6 and y==7:
+        matrizR1[1][1]=[x, y]
+        matrizBinariaR1[1][1]=1
+    if x==6 and y==10:
+        matrizR1[1][2]=[x, y]
+        matrizBinariaR1[1][2]=1
+    if x==3 and y==4:
+        matrizR1[2][0]=[x, y]
+        matrizBinariaR1[2][0]=1
+    if x==3 and y==7:
+        matrizR1[2][1]=[x, y]
+        matrizBinariaR1[2][1]=1
+    if x==3 and y==10:
+        matrizR1[2][2]=[x, y]
+        matrizBinariaR1[2][2]=1
+
+def llenarMatrizR2(x, y):
+    global matrizR2
+    if x==9 and y==4:
+        matrizR2[0][0]=[x, y]
+        matrizBinariaR2[0][0]=1
+    if x==9 and y==7:
+        matrizR2[0][1]=[x, y]
+        matrizBinariaR2[0][1]=1
+    if x==9 and y==10:
+        matrizR2[0][2]=[x, y]
+        matrizBinariaR2[0][2]=1
+    if x==6 and y==4:
+        matrizR2[1][0]=[x, y]
+        matrizBinariaR2[1][0]=1
+    if x==6 and y==7:
+        matrizR2[1][1]=[x, y]
+        matrizBinariaR2[1][1]=1
+    if x==6 and y==10:
+        matrizR2[1][2]=[x, y]
+        matrizBinariaR2[1][2]=1
+    if x==3 and y==4:
+        matrizR2[2][0]=[x, y]
+        matrizBinariaR2[2][0]=1
+    if x==3 and y==7:
+        matrizR2[2][1]=[x, y]
+        matrizBinariaR2[2][1]=1
+    if x==3 and y==10:
+        matrizR2[2][2]=[x, y]
+        matrizBinariaR2[2][2]=1
+def impririMatrices():
+    print '\nMovimientos: Amarillo'
+    for element in matrizBinariaR1 :
+        print element
+    print ' '
+    for element in matrizR1 :
+        print element
+    print '\nMovimientos: Azul'
+    for element in matrizBinariaR2 :
+        print element
+    print ' '
+    for element in matrizR2 :
+        print element
+for i in range(0,81):
+    if verificador()!=None:
+        policia()
+        break
+    R2=UsedRobot(avenues=b,streets=a,name='michael',colour='blue',beepers=24, orient_key='S')
+    R1=UsedRobot(avenues=b,streets=a,name='michael',colour='yellow',beepers=24, orient_key='S')
+    n1=input_int('AMARILLO\nSelecicione Una Columna \n\nF\nI 9\nL 6\nA 3\nS\n      4   7   10\n    COLUMNAS')
+    n2=input_int('AMARILLO\nSelecicione Una Fila \n\nF\nI 9\nL 6\nA 3\nS\n      4   7   10\n    COLUMNAS')
+    llenarMatrizR1(n2, n1) #funcion LLenar Matriz
+    while n2==3 or n2==6 or n2==9:
+        for i in range(0,a-n2):
+            R1.move()
+        R1.turn_left()
+        while n1==4 or n1==7 or n1==10:
+                for i in range(0,n1-b):
+                    R1.move()
+                R1.put_beeper()
+                R1.put_beeper()
+                R1.move()
+                R1.turn_left()
+                R1.put_beeper()                
+                dibujarCuad() #funcion dibujar cuadro            
+                R1.pick_beeper()
+                R1.turn_left()
+                n1=0
+                n2=0
+                if verificador()!=None:
+                    policia()
+                    print 'none'
+                    break
+                n1=input_int('AZUL\nSelecicione Una Columna \n\nF\nI 9\nL 6\nA 3\nS\n      4   7   10\n    COLUMNAS')
+                n2=input_int('AZUL\nSelecicione Una Fila \n\nF\nI 9\nL 6\nA 3\nS\n      4   7   10\n    COLUMNAS')
+                llenarMatrizR2(n2, n1) #funcion LLenar Matriz
+                while n2==3 or n2==6 or n2==9:
+                    for i in range(0,a-n2):
+                        R2.move()
+                    R2.turn_left()
+                    while n1==4 or n1==7 or n1==10:
+                            for i in range(0,n1-b):
+                                R2.move()
+                            R2.put_beeper()
+                            R2.move()
+                            R2.turn_left()                            
+                            dibujarCruz() #funcion dibujar Cruz
+                            R2.turn_left()
+                            n1=0
+                            n2=0    
