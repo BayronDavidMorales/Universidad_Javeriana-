@@ -26,22 +26,10 @@ void setup()
 }
 
 void loop(){
-    // leds(pinLedUno, HIGH);
-    //chicharra(8, 1);
-    //blinkFunction(5);
-    // chicharra(pinChicharra, 1);
 
     chicharra(pinChicharra, pulzador(pinPulzador));
-
-        // leds(pinLedUno, pulzador(pinPulzador));
-    // chicharra(pinChicharra, piezoElectrico(pinAnalogoPiezoElectro));
-    // delay(100);
-    // if (piezoElectrico(pinAnalogoPiezoElectro) == 1)
-    //     girarServo(servo, 90);
-    //     else{
-    //         girarServo(servo, -90);
-    //     }
 }
+
 //---------FUNCIONES----------------
 //PIEZO ELECTRICO
 byte piezoElectrico(int pinAnalogoPiezoElectro)
