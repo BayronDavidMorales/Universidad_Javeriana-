@@ -9,7 +9,9 @@ byte pinChicharra= 8;
 
 int pinAnalogoPiezoElectro = A0;
 
-int e=0;
+int pinPulzador=7;
+
+int e = 0;
 int state = LOW;
 
 void setup()
@@ -29,14 +31,16 @@ void loop(){
     //blinkFunction(5);
     // chicharra(pinChicharra, 1);
 
-    leds(pinLedUno, piezoElectrico(pinAnalogoPiezoElectro));
-    chicharra(pinChicharra, piezoElectrico(pinAnalogoPiezoElectro));
-    delay(100);
-    if (piezoElectrico(pinAnalogoPiezoElectro) == 1)
-        girarServo(servo, 90);
-        else{
-            girarServo(servo, -90);
-        }
+    chicharra(pinChicharra, pulzador(pinPulzador));
+
+        // leds(pinLedUno, pulzador(pinPulzador));
+    // chicharra(pinChicharra, piezoElectrico(pinAnalogoPiezoElectro));
+    // delay(100);
+    // if (piezoElectrico(pinAnalogoPiezoElectro) == 1)
+    //     girarServo(servo, 90);
+    //     else{
+    //         girarServo(servo, -90);
+    //     }
 }
 //---------FUNCIONES----------------
 //PIEZO ELECTRICO
@@ -45,6 +49,19 @@ byte piezoElectrico(int pinAnalogoPiezoElectro)
     if(analogRead(pinAnalogoPiezoElectro)>50){
         state = !state;
         delay(500);
+        return state;
+    }
+    // delay(100);
+    return state;
+}
+//PIEZO ELECTRICO
+byte pulzador(int pinPulzador)
+{
+    if (digitalRead(pinPulzador) == HIGH)
+    {
+        Serial.println(state);
+        state = !state;
+        delay(200);
         return state;
     }
     // delay(100);
