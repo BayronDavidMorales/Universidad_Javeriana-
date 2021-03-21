@@ -11,8 +11,11 @@ int pinAnalogoPiezoElectro = A0;
 
 int pinPulzador=7;
 
+byte pinFotoSensor= A1;
+
 int e = 0;
 int state = LOW;
+int stateFotoSensor=LOW;
 
 void setup()
 {
@@ -23,31 +26,64 @@ void setup()
 
     pinMode(pinChicharra, OUTPUT); // chicharra
     pinMode(pinLedUno, OUTPUT); // chicharra
+
+    pinMode(pinFotoSensor, INPUT); // analogo
 }
 
 void loop(){
+    Serial.println(analogRead(pinFotoSensor));
+    chicharraHorno(pinChicharra, 0);
 
-    chicharra(pinChicharra, pulzador(pinPulzador));
+    // delay(500);
+    if (e == 0){
+        girarServo(servo, 0);
+    }
+    if (piezoElectrico(pinAnalogoPiezoElectro) == HIGH & e==0)
+    {
+        leds(pinLedUno, 1);
+        girarServo(servo, 1);
+        e++;
+        delay(3000);
+    }
+    if (fotorresistor(pinFotoSensor) == HIGH & e == 1)
+    {
+        leds(pinLedUno, 0);
+        chicharraHorno(pinChicharra, HIGH);
+        girarServo(servo, 0);
+        chicharraHorno(pinChicharra, HIGH);
+        e++;
+        // delay(3000);
+    }
 }
 
 //---------FUNCIONES----------------
+// FOTO RESISTOR
+byte fotorresistor(byte pinFotoSensor)
+{
+    // Serial.println(analogRead(pinFotoSensor));
+    if (analogRead(pinFotoSensor)>900){
+        stateFotoSensor=!stateFotoSensor;
+        return stateFotoSensor;
+    }
+    return stateFotoSensor;
+}
 //PIEZO ELECTRICO
 byte piezoElectrico(int pinAnalogoPiezoElectro)
 {
-    if(analogRead(pinAnalogoPiezoElectro)>50){
+    if(analogRead(pinAnalogoPiezoElectro)>100){
         state = !state;
-        delay(500);
+        delay(300);
         return state;
     }
-    // delay(100);
+    // Serial.println(state);
     return state;
 }
-//PIEZO ELECTRICO
+//PULZADOR
 byte pulzador(int pinPulzador)
 {
     if (digitalRead(pinPulzador) == HIGH)
     {
-        Serial.println(state);
+        // Serial.println(state);
         state = !state;
         delay(200);
         return state;
@@ -63,27 +99,32 @@ byte pulzador(int pinPulzador)
 //girarServo(servo, 90) => gira 90 grados en contra de las manecillas
 //girarServo(servo, -90) => gira 90 grados en sentido de las manecillas
 
-int girarServo(Servo servo, int angulo)
+int girarServo(Servo servo, int orden)
 {
-    if (angulo > 0)
-    {
-        for (int pos = posServo; pos <= angulo; pos += 1)
-        {
-            servo.write(pos);
-            delay(15);
-        }
+    switch(orden){
+        case 0:
+            for (int pos = servo.read(); pos >= 2; pos -= 1)
+            {
+                servo.write(pos);
+                delay(20);
+            }
+            break;
+        case 1:
+            for (int pos = servo.read(); pos <= 120; pos += 1)
+            {
+                servo.write(pos);
+                delay(30);
+            }
+            break;
+        default:
+            for (int pos = servo.read(); pos >= 2; pos -= 1)
+            {
+                servo.write(pos);
+                delay(10);
+            }
+            break;
     }
-
-    else
-    {
-        for (int pos = angulo; pos <= posServo; pos += 1)
-        {
-            servo.write(pos);
-            delay(15);
-        }
-    }
-    posServo = servo.read();
-    return servo.read();
+    
 }
 
 //PRENDER Y APAGAR LEDS
@@ -121,7 +162,6 @@ int leds(int pinLed, byte onOff)
 
 byte chicharra(int pinChicharra, byte onOff)
 {
-
     if (onOff == 1)
     {
         float sinVal;
@@ -136,7 +176,28 @@ byte chicharra(int pinChicharra, byte onOff)
     }
     else
     {
-        tone(pinChicharra, 0);
+        noTone(pinChicharra);
+    }
+}
+byte chicharraHorno(int pinChicharra, byte onOff)
+{
+    if (onOff == 1)
+    {
+        float sinVal;
+        int toneVal;
+        for (int x = 0; x < 2; x++)
+        {
+            sinVal = (sin(8 * (3.14 / 180)));
+            toneVal = 2000 + (int(sinVal * 1000));
+            tone(pinChicharra, toneVal);
+            delay(200);
+            noTone(pinChicharra);
+            delay(100);
+        }
+    }
+    else
+    {
+        noTone(pinChicharra);
     }
 }
 //BLINK
